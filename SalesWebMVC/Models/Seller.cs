@@ -20,14 +20,14 @@ namespace SalesWebMVC.Models
     { 
 
     }
-    public Seller(string name, string email, decimal baseSalary, DateTime birthDate, Department department)
-    {
-      Name = name;
-      Email = email;
-      BaseSalary = baseSalary;
-      BirthDate = birthDate;
-      this.department = department;
-    }
+    //public Seller(string name, string email, decimal baseSalary, DateTime birthDate, Department department)
+    //{
+    //  Name = name;
+    //  Email = email;
+    //  BaseSalary = baseSalary;
+    //  BirthDate = birthDate;
+    //  this.department = department;
+    //}
 
     public void AddSales(SalesRecord sr)
     {

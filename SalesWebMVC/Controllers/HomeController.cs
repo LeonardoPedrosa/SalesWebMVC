@@ -25,6 +25,7 @@ namespace SalesWebMVC.Controllers
 
     public IActionResult Privacy()
     {
+      //ViewData["Message"] =  "you are on the privacy page";
       return View();
     }
 
