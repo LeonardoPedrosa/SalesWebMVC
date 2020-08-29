@@ -11,46 +11,48 @@ using SalesWebMVC.Services.Exceptions;
 
 namespace SalesWebMVC.Controllers
 {
-    public class SellersController : Controller
-    {
-      private readonly SellerService _sellerService;
+  //DI
+  public class SellersController : Controller
+  {
+    private readonly IService _service;
 
-    public SellersController(SellerService sellerService)
+    public SellersController(IService service)
     {
-        this._sellerService = sellerService ?? throw new ArgumentNullException(nameof(sellerService));
+      _service = service;
     }
-      public async Task<IActionResult> Index()
-      {
-          var list = await _sellerService.FindAll(); 
-          return View(list);
-      }
 
-      public async Task<IActionResult> Create()
-      {
-        ViewBag.Departments = await _sellerService.FindAllDept();
-        return View();
-      }
+    public async Task<IActionResult> Index()
+    {
+      var list = await _service.GetSellers();
+      return View(list);
+    }
+
+    public async Task<IActionResult> Create()
+    {
+      ViewBag.Departments = await _service.FindAllDept();
+      return View();
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Seller seller)
-    {       
-      _sellerService.Insert(seller);
-      if (await _sellerService.SaveChangesAsync())
+    {
+      _service.Add(seller);
+      if (await _service.SaveChangeAsync())
       {
         return RedirectToAction(nameof(Index));
       }
-    return RedirectToAction(nameof(Index));
+      return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
     public async Task<IActionResult> Delete(int? id)
     {
-      if(id == null)
+      if (id == null)
       {
         return NotFound();
       }
-      var seller = await _sellerService.FindById(id.Value);
+      var seller = await _service.GetSellerById(id.Value);
 
       if (seller == null)
       {
@@ -61,10 +63,10 @@ namespace SalesWebMVC.Controllers
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, Seller seller)
     {
-      _sellerService.Delete(id);
-      if(await _sellerService.SaveChangesAsync())
+      _service.Delete(seller);
+      if (await _service.SaveChangeAsync())
       {
         return RedirectToAction(nameof(Index));
       }
@@ -77,7 +79,7 @@ namespace SalesWebMVC.Controllers
       {
         return NotFound();
       }
-      var seller = await _sellerService.FindById(id.Value);
+      var seller = await _service.GetSellerById(id.Value);
 
       if (seller == null)
       {
@@ -88,39 +90,39 @@ namespace SalesWebMVC.Controllers
 
     public async Task<IActionResult> Edit(int? id)
     {
-      if(id == null)
+      if (id == null)
       {
         return NotFound();
       }
 
-      var seller = await _sellerService.FindById(id.Value);
+      var seller = await _service.GetSellerById(id.Value);
 
-      if(seller == null)
+      if (seller == null)
       {
         return NotFound();
       }
 
-      ViewBag.Departments = await _sellerService.FindAllDept();
+      ViewBag.Departments = await _service.FindAllDept();
       return View(seller);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Seller seller) 
-    { 
-      if(id != seller.Id)
+    public async Task<IActionResult> Edit(int id, Seller seller)
+    {
+      if (id != seller.Id)
       {
         return NotFound();
       }
 
       try
       {
-        _sellerService.Update(seller);
+        _service.Update(seller);
 
-        await _sellerService.SaveChangesAsync();
-          
+        await _service.SaveChangeAsync();
+
         return RedirectToAction(nameof(Index));
-          
+
       }
       catch (NotFoundException)
       {
